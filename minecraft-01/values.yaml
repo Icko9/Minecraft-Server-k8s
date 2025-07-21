@@ -1,0 +1,31 @@
+replicaCount: 1
+
+image:
+  repository: itzg/minecraft-server
+  tag: "latest"
+
+service:
+  name: minecraft
+  type: LoadBalancer
+  port: 25565 
+  targetPort: minecraft
+
+env:
+  EULA: "TRUE"
+  MEMORY: "2G"
+  MAX_MEMORY: "4G"
+  DIFFICULTY: "easy"
+  LEVEL_TYPE: "default"
+  LEVEL_NAME: "world"
+  SERVER_NAME: "Minecraft Server"
+  MOTD: "Welcome to our Minecraft Server"
+  WHITE_LIST: "false"
+  OPS: "admin"
+  PVP: "true"
+  MAX_PLAYERS: "20"
+
+
+persistence:
+  enabled: true
+  size: 10Gi
+  storageClass: azurefile

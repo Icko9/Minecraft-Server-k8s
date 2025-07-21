@@ -1,0 +1,30 @@
+{{- if .Values.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: minecraft-world-pv
+  labels:
+    {{- include "minecraft-01.labels" . | nindent 4 }}
+spec:
+  capacity:
+    storage: {{ .Values.persistence.size }}
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  csi:
+    driver: file.csi.azure.com
+    readOnly: false
+    volumeHandle: minecraft-world-pv
+    volumeAttributes:
+      secretName: azure-file-secret
+      shareName: minecraft-world
+      storageAccount: {{ .Values.storageAccountName }}
+    nodeStageSecretRef:
+      name: azure-file-secret
+      namespace: {{ .Release.Namespace }}
+  mountOptions:
+    - dir_mode=0755
+    - file_mode=0644
+    - uid=1000
+    - gid=1000
+{{- end }} 

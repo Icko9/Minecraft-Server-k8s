@@ -1,0 +1,16 @@
+{{- if .Values.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: minecraft-data
+  labels:
+    {{- include "minecraft-01.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ""  # Empty string for static PV
+  volumeName: minecraft-world-pv  # Bind to our static PV
+  resources:
+    requests:
+      storage: {{ .Values.persistence.size }}
+{{- end }} 
