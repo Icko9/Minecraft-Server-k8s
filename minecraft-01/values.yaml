@@ -9,12 +9,12 @@ service:
   type: LoadBalancer
   port: 25565
   targetPort: minecraft
-  loadBalancerIP: "128.251.156.59"
+  loadBalancerIP: "74.178.186.251"
 
 env:
   EULA: "TRUE"
-  MEMORY: "2G"
-  MAX_MEMORY: "4G"
+  MEMORY: "1G"
+  MAX_MEMORY: "2G"
   DIFFICULTY: "easy"
   LEVEL_TYPE: "default"
   LEVEL_NAME: "world"

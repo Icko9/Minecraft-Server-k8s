@@ -21,9 +21,9 @@ resource rg 'Microsoft.Resources/resourceGroups@2023-07-01' = {
   location: location
 }
 
-// Reference existing MC resource group created by AKS
+// Reference the custom-named resource group that AKS will create
 resource mcRg 'Microsoft.Resources/resourceGroups@2023-07-01' existing = {
-  name: 'MC_${resourceGroupName}_${clusterName}_${replace(location, ' ', '')}'
+  name: '${resourceGroupName}-AKS'
 }
 
 // Storage Account Parameters
