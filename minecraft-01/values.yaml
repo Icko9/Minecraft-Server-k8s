@@ -7,8 +7,9 @@ image:
 service:
   name: minecraft
   type: LoadBalancer
-  port: 25565 
+  port: 25565
   targetPort: minecraft
+  loadBalancerIP: "128.251.156.59"
 
 env:
   EULA: "TRUE"

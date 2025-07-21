@@ -21,6 +21,11 @@ resource rg 'Microsoft.Resources/resourceGroups@2023-07-01' = {
   location: location
 }
 
+// Reference existing MC resource group created by AKS
+resource mcRg 'Microsoft.Resources/resourceGroups@2023-07-01' existing = {
+  name: 'MC_${resourceGroupName}_${clusterName}_${replace(location, ' ', '')}'
+}
+
 // Storage Account Parameters
 param storageAccountName string 
 param fileShareName string 
@@ -52,6 +57,18 @@ module aks './modules/aks.bicep' = {
   }
 }
 
+module pip './modules/pip.bicep' = {
+  name: 'minecraft-pip'
+  scope: mcRg
+  dependsOn: [
+    aks
+  ]
+  params: {
+    name: 'minecraft-static-ip'
+    location: location
+  }
+}
+
 module storage './modules/storage.bicep' = {
   name: storageAccountName
   scope: rg
@@ -62,7 +79,10 @@ module storage './modules/storage.bicep' = {
   }
 }
 
+
+
 // Outputs for other modules or external use
 output aksResourceId string = aks.outputs.aksResourceId
 output managedIdentityId string = mi.outputs.miResourceId
 output managedIdentityPrincipalId string = mi.outputs.miPrincipalId
+output staticPublicIP string = pip.outputs.publicIPAddress
