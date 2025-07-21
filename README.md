@@ -14,19 +14,21 @@ This project demonstrates a complete cloud-native application deployment featuri
 ## 🚀 Features
 
 - **Persistent World Data**: Minecraft worlds survive pod restarts and cluster updates
+- **Static Public IP**: Consistent IP address that never changes (no more updating server lists!)
 - **Auto-scaling Infrastructure**: AKS cluster with configurable node counts
 - **Environment-specific Deployments**: Parameter files for different environments
 - **Secure Storage**: Managed identity integration for Azure File Share access
-- **Public Access**: LoadBalancer service with external IP for player connections
+- **Public Access**: LoadBalancer service with static external IP for reliable connections
 - **Resource Efficiency**: Server auto-pauses when no players are connected
 
 ## 📋 Components
 
 ### Infrastructure (Bicep)
 - **AKS Cluster**: Kubernetes cluster with system node pool
+- **Static Public IP**: Reserved IP address in AKS managed resource group
 - **Storage Account**: Azure Storage with File Share for persistent data
 - **Managed Identity**: Service identity for secure resource access
-- **Virtual Network**: Network isolation and security
+- **Resource Group Management**: Proper MC_ resource group handling
 
 ### Application (Helm)
 - **Deployment**: Minecraft server container with resource limits
@@ -104,9 +106,13 @@ kubectl get service minecraft-minecraft-01 -o jsonpath='{.status.loadBalancer.in
 
 ## 🎮 Connecting to the Server
 
+Your server has a **static IP address** that never changes!
+
 1. Open Minecraft Java Edition
-2. Add server with IP: `YOUR_EXTERNAL_IP:25565`
+2. Add server with IP: `128.251.156.59:25565` (or your deployed static IP)
 3. Connect and enjoy!
+
+**Note**: The IP address is consistent across deployments and service restarts.
 
 ## 🐛 Troubleshooting
 
@@ -146,20 +152,22 @@ kubectl get service minecraft-minecraft-01 -o yaml
 - **External IP Management**: How Azure assigns and manages public IPs for LoadBalancer services
 
 ### Azure Integration
-- **AKS Managed Resources**: Understanding the `MC_` resource group for AKS-managed infrastructure
+- **AKS Managed Resources**: Understanding and working with the `MC_` resource group for AKS-managed infrastructure
+- **Static IP Management**: Creating Public IPs in the correct resource group for LoadBalancer services
+- **Resource Group Dependencies**: Proper sequencing of resource creation and referencing
 - **File Share Authentication**: Using storage account keys vs managed identity (future improvement)
 - **Network Security Groups**: Automatic rule creation for LoadBalancer services
 
 ## 🔮 Future Improvements
 
 1. **Workload Identity**: Replace storage account keys with managed identity authentication
-2. **Static Public IP**: Use Bicep to create and assign a static public IP address
-3. **Monitoring**: Add Prometheus/Grafana for server metrics and alerting
-4. **Backup Automation**: Scheduled backups of world data to blob storage
-5. **Ingress Controller**: Add web-based administration interface
-6. **Network Policies**: Implement pod-to-pod security restrictions
-7. **Resource Quotas**: Set proper CPU/memory limits and requests
-8. **Multi-environment**: Expand parameter files for dev/staging/production
+2. **Monitoring**: Add Prometheus/Grafana for server metrics and alerting
+3. **Backup Automation**: Scheduled backups of world data to blob storage
+4. **Ingress Controller**: Add web-based administration interface
+5. **Network Policies**: Implement pod-to-pod security restrictions
+6. **Resource Quotas**: Set proper CPU/memory limits and requests
+7. **Multi-environment**: Expand parameter files for dev/staging/production
+8. **Custom Domain**: Map a DNS name to the static IP address
 
 ## 📊 Architecture Benefits
 
