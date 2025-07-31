@@ -17,7 +17,7 @@ This project demonstrates a complete cloud-native application deployment featuri
 - **Static Public IP**: Consistent IP address that never changes (no more updating server lists!)
 - **Auto-scaling Infrastructure**: AKS cluster with configurable node counts
 - **Environment-specific Deployments**: Parameter files for different environments
-- **Secure Storage**: Managed identity integration for Azure File Share access
+- **Workload Identity Security**: Federated credentials with Azure File Share access (no storage keys in Kubernetes!)
 - **Public Access**: LoadBalancer service with static external IP for reliable connections
 - **Resource Efficiency**: Server auto-pauses when no players are connected
 
@@ -27,7 +27,7 @@ This project demonstrates a complete cloud-native application deployment featuri
 - **AKS Cluster**: Kubernetes cluster with system node pool
 - **Static Public IP**: Reserved IP address in AKS managed resource group
 - **Storage Account**: Azure Storage with File Share for persistent data
-- **Managed Identity**: Service identity for secure resource access
+- **Workload Identity**: Service identity with federated credentials for secure, keyless authentication
 - **Resource Group Management**: Proper MC_ resource group handling
 
 ### Application (Helm)
@@ -80,19 +80,13 @@ az aks get-credentials \
   --name aks-minecraft-staging
 ```
 
-### 3. Create Storage Secret
-```bash
-# Get storage account key
-az storage account keys list \
-  --account-name "minecraftworlddata2024xyz21312" \
-  --resource-group "rg-minecraft-server-staging" \
-  --query '[0].value' --output tsv
+### 3. Workload Identity Authentication (No Secrets Required!)
+The infrastructure deployment automatically sets up:
+- **Workload Identity** with federated credentials
+- **RBAC permissions** for secure file share access
+- **Service Account** with proper annotations
 
-# Create Kubernetes secret
-kubectl create secret generic azure-file-secret \
-  --from-literal=azurestorageaccountname=minecraftworlddata2024xyz21312 \
-  --from-literal=azurestorageaccountkey=YOUR_STORAGE_KEY
-```
+No manual secret creation needed! 🎉
 
 ### 4. Deploy Minecraft Server
 ```bash
@@ -155,12 +149,18 @@ kubectl get service minecraft-minecraft-01 -o yaml
 - **AKS Managed Resources**: Understanding and working with the `MC_` resource group for AKS-managed infrastructure
 - **Static IP Management**: Creating Public IPs in the correct resource group for LoadBalancer services
 - **Resource Group Dependencies**: Proper sequencing of resource creation and referencing
-- **File Share Authentication**: Using storage account keys vs managed identity (future improvement)
+- **Workload Identity Authentication**: Implemented federated credentials for secure file share access without storing keys in Kubernetes
 - **Network Security Groups**: Automatic rule creation for LoadBalancer services
+
+### Workload Identity Implementation
+- **Authentication Flow**: Kubernetes service account token → Federated credential → Azure AD token → Storage account key retrieval → File share mount
+- **Security Benefits**: No storage account keys stored in Kubernetes secrets, revocable federated credentials, audit trail of authentication events
+- **Current Limitation**: Azure File CSI driver requires hybrid approach (uses workload identity to fetch keys, not direct RBAC file access)
+- **Architecture Decision**: Chose most secure option available with current Azure File CSI driver capabilities
 
 ## 🔮 Future Improvements
 
-1. **Workload Identity**: Replace storage account keys with managed identity authentication
+1. **Pure RBAC Authentication**: Monitor Azure File CSI driver updates for keyless file share access (currently uses hybrid approach)
 2. **Monitoring**: Add Prometheus/Grafana for server metrics and alerting
 3. **Backup Automation**: Scheduled backups of world data to blob storage
 4. **Ingress Controller**: Add web-based administration interface
@@ -182,10 +182,11 @@ kubectl get service minecraft-minecraft-01 -o yaml
 - **Infrastructure as Code**: Bicep template development and deployment
 - **Container Orchestration**: Kubernetes deployment, service, and storage management
 - **Cloud Architecture**: Azure service integration and networking
+- **Security Implementation**: Workload identity, federated credentials, and RBAC configuration
 - **Application Packaging**: Helm chart development and templating
-- **System Debugging**: Troubleshooting networking, storage, and service issues
+- **System Debugging**: Troubleshooting networking, storage, authentication, and service issues
 - **DevOps Practices**: Parameterized deployments and environment management
 
 ---
 
-*This project showcases production-ready cloud-native application deployment using modern DevOps practices and Azure cloud services.*
+*This project showcases production-ready cloud-native application deployment using modern DevOps practices, Azure cloud services, and enterprise-grade security with workload identity authentication.*
