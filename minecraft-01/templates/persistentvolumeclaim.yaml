@@ -8,7 +8,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteMany
-  storageClassName: ""  # Empty string for static PV
+  storageClassName: ""  # Use static PV binding
   volumeName: minecraft-world-pv  # Bind to our static PV
   resources:
     requests:

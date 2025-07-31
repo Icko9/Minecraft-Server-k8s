@@ -29,4 +29,22 @@ env:
 persistence:
   enabled: true
   size: 10Gi
-  storageClass: azurefile
+  storageClass: ""  # Using static PV
+
+# Managed Identities (populated from env.yaml)
+managedIdentities:
+  resources:
+    minecraftSTA: "minecraftw4xyz2132ts12"
+  identities:
+    minecraftWorkloadIdentity: "1d31f59b-d810-426c-ae57-5069ddc9e8eb"
+
+# Kubernetes configuration
+kubernetes:
+  namespace: "default"
+  serviceAccount: "minecraft-sa"
+
+# Azure File CSI configuration (using workload identity)
+azureFile:
+  storageAccountName: "minecraftw4xyz2132ts12"
+  fileShareName: "minecraft-world"
+  resourceGroupName: "rg-minecraft-server-dev"

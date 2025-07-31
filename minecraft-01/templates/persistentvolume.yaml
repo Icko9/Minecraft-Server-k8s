@@ -14,14 +14,14 @@ spec:
   csi:
     driver: file.csi.azure.com
     readOnly: false
-    volumeHandle: minecraft-world-pv
+    volumeHandle: minecraft-world-pv-unique
     volumeAttributes:
-      secretName: azure-file-secret
-      shareName: minecraft-world
-      storageAccount: {{ .Values.storageAccountName }}
-    nodeStageSecretRef:
-      name: azure-file-secret
-      namespace: {{ .Release.Namespace }}
+      resourceGroup: {{ .Values.azureFile.resourceGroupName }}
+      storageAccount: {{ .Values.azureFile.storageAccountName }}
+      shareName: {{ .Values.azureFile.fileShareName }}
+      protocol: smb
+      clientID: {{ .Values.managedIdentities.identities.minecraftWorkloadIdentity }}
+      # Using workload identity to fetch storage account keys (hybrid approach)
   mountOptions:
     - dir_mode=0755
     - file_mode=0644

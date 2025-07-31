@@ -13,7 +13,9 @@ spec:
     metadata:
       labels:
         {{- include "minecraft-01.selectorLabels" . | nindent 8 }}
+        azure.workload.identity/use: "true"
     spec:
+      serviceAccountName: {{ .Values.kubernetes.serviceAccount }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

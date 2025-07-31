@@ -21,6 +21,14 @@ resource aks 'Microsoft.ContainerService/managedClusters@2023-05-01' = {
     properties: {
         dnsPrefix: dnsPrefix
         nodeResourceGroup: nodeResourceGroupName
+        oidcIssuerProfile: {
+            enabled: true
+        }
+        securityProfile: {
+            workloadIdentity: {
+                enabled: true
+            }
+        }
         agentPoolProfiles: [
             {
                 name: 'agentpool'
@@ -36,3 +44,4 @@ resource aks 'Microsoft.ContainerService/managedClusters@2023-05-01' = {
 
 
 output aksResourceId string = aks.id
+output oidcIssuerUrl string = aks.properties.oidcIssuerProfile.issuerURL
